@@ -23,7 +23,7 @@ activity <- read_csv("activity.csv")
 
 ```
 ## 
-## -- Column specification -------------------------------------------------------------------------------------------------
+## -- Column specification -----------------------------------------------------------------------------------------
 ## cols(
 ##   steps = col_double(),
 ##   date = col_date(format = ""),
@@ -33,21 +33,6 @@ activity <- read_csv("activity.csv")
 
 ```r
 head(activity)#read and view data
-```
-
-```
-## # A tibble: 6 x 3
-##   steps date       interval
-##   <dbl> <date>        <dbl>
-## 1    NA 2012-10-01        0
-## 2    NA 2012-10-01        5
-## 3    NA 2012-10-01       10
-## 4    NA 2012-10-01       15
-## 5    NA 2012-10-01       20
-## 6    NA 2012-10-01       25
-```
-
-```r
 #preprocess data and load necessary packages
 library(ggplot2)
 library(dplyr)
@@ -59,19 +44,6 @@ Mean Steps per day is 10766.188679 and Median Steps per day is 10765
 ```r
 aggsteps<- aggregate(steps ~ date, activity, FUN=sum)
 head(aggsteps)#Calculate the total number of steps taken per day
-```
-
-```
-##         date steps
-## 1 2012-10-02   126
-## 2 2012-10-03 11352
-## 3 2012-10-04 12116
-## 4 2012-10-05 13294
-## 5 2012-10-06 15420
-## 6 2012-10-07 11015
-```
-
-```r
 hist(aggsteps$steps, 
      col="purple", 
      xlab = "Frequency", 
@@ -79,7 +51,7 @@ hist(aggsteps$steps,
      main = "Total number of steps taken each day") #histogram of 
 ```
 
-![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png)
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png)
 
 ```r
 #totalsteps per day
@@ -99,16 +71,11 @@ plot(agginterval$interval, agginterval$steps,
      main = "Total Steps vs. 5-Minute Interval")
 ```
 
-![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png)
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
 
 ```r
 #Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 filter(agginterval, steps==max(steps))#interval 835 at 10927 steps
-```
-
-```
-##   interval steps
-## 1      835 10927
 ```
 Imputing missing values
 2304 Nas in file
@@ -137,16 +104,6 @@ activity2$steps <- ifelse(is.na(activity2$steps.x), activity2$steps.y, activity2
 #Merged dataset which will be subsetted in the next step by removing not required columns
 head(activity2)
 ```
-
-```
-##   interval steps.x       date  steps.y    steps
-## 1        0      NA 2012-10-01 1.716981 1.716981
-## 2        0       0 2012-11-23 1.716981 0.000000
-## 3        0       0 2012-10-28 1.716981 0.000000
-## 4        0       0 2012-11-06 1.716981 0.000000
-## 5        0       0 2012-11-24 1.716981 0.000000
-## 6        0       0 2012-11-15 1.716981 0.000000
-```
 Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 ```r
@@ -155,16 +112,6 @@ activity2 <- select(activity2, steps, date, interval)
 
 #New dataset with NA imputed by mean for that 5-minute interval
 head(activity2)
-```
-
-```
-##      steps       date interval
-## 1 1.716981 2012-10-01        0
-## 2 0.000000 2012-11-23        0
-## 3 0.000000 2012-10-28        0
-## 4 0.000000 2012-11-06        0
-## 5 0.000000 2012-11-24        0
-## 6 0.000000 2012-11-15        0
 ```
 Make a histogram of the total number of steps taken each day.  
 
@@ -195,7 +142,7 @@ hist(aggsteps$steps,
      cex.main = 0.7)
 ```
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
+![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
 Calculate and report the mean and median total number of steps taken per day.
 Mean is 10766.188679
 Median is 10766.18879
@@ -244,42 +191,109 @@ table(activity2$dayofweek)
 ```r
 head(activity2)
 ```
-
-```
-##      steps       date interval dayofweek
-## 1 1.716981 2012-10-01        0   weekday
-## 2 0.000000 2012-11-23        0   weekday
-## 3 0.000000 2012-10-28        0   weekend
-## 4 0.000000 2012-11-06        0   weekday
-## 5 0.000000 2012-11-24        0   weekend
-## 6 0.000000 2012-11-15        0   weekday
-```
 Make a panel plot containing a time series plot (i.e. \color{red}{\verb|type = "l"|}type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
 ```r
-#Aggregating(mean) steps over interval and day of week
-meaninterval_activity2<- aggregate(steps ~ interval + dayofweek, activity2, FUN=mean)
-
+meaninterval_activity2 <- aggregate(steps ~interval + dayofweek, activity2, FUN=mean)
 #Aggregated Data
 head(meaninterval_activity2)
-```
 
-```
-##   interval dayofweek      steps
-## 1        0   weekday 2.25115304
-## 2        5   weekday 0.44528302
-## 3       10   weekday 0.17316562
-## 4       15   weekday 0.19790356
-## 5       20   weekday 0.09895178
-## 6       25   weekday 1.59035639
-```
-
-```r
 ggplot(meaninterval_activity2, aes(x=interval, y=steps)) + 
   geom_line(color="tan2", size=1) + 
   facet_wrap(~dayofweek, nrow=2) +
   labs(x="\nInterval", y="\nNumber of steps")
 ```
 
-![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-25-1.png)
+![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23-1.png)
+
+```r
+library(knitr)
+knit("PA1_template.Rmd")
+```
+
+```
+## 
+## 
+## processing file: PA1_template.Rmd
+```
+
+```
+##   |                                                                                                               |                                                                                                       |   0%  |                                                                                                               |....                                                                                                   |   4%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |.........                                                                                              |   9%
+## label: unnamed-chunk-24
+##   |                                                                                                               |.............                                                                                          |  13%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |..................                                                                                     |  17%
+## label: unnamed-chunk-25
+##   |                                                                                                               |......................                                                                                 |  22%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |...........................                                                                            |  26%
+## label: unnamed-chunk-26
+```
+
+```
+##   |                                                                                                               |...............................                                                                        |  30%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |....................................                                                                   |  35%
+## label: unnamed-chunk-27
+```
+
+```
+##   |                                                                                                               |........................................                                                               |  39%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |.............................................                                                          |  43%
+## label: unnamed-chunk-28
+##   |                                                                                                               |.................................................                                                      |  48%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |......................................................                                                 |  52%
+## label: unnamed-chunk-29
+##   |                                                                                                               |..........................................................                                             |  57%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |...............................................................                                        |  61%
+## label: unnamed-chunk-30
+##   |                                                                                                               |...................................................................                                    |  65%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |........................................................................                               |  70%
+## label: unnamed-chunk-31
+```
+
+```
+##   |                                                                                                               |............................................................................                           |  74%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |.................................................................................                      |  78%
+## label: unnamed-chunk-32
+##   |                                                                                                               |.....................................................................................                  |  83%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |..........................................................................................             |  87%
+## label: unnamed-chunk-33
+##   |                                                                                                               |..............................................................................................         |  91%
+##   ordinary text without R code
+## 
+##   |                                                                                                               |...................................................................................................    |  96%
+## label: unnamed-chunk-34
+```
+
+```
+##   |                                                                                                               |.......................................................................................................| 100%
+##   ordinary text without R code
+```
+
+```
+## output file: PA1_template.md
+```
+
+```
+## [1] "PA1_template.md"
+```
 
